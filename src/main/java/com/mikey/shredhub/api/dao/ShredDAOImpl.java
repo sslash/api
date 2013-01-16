@@ -34,13 +34,15 @@ public class ShredDAOImpl implements ShredDAO {
 	private static final String GET_ALL_TAGS = "SELECT * FROM Tag";
 
 	private static final String GET_TAG_WITH_LABEL = "SELECT * FROM Tag WHERE Label=?";
+	
+	private static final int NO_SHREDS_IN_RESULT_SET = 20;
 
 	public static final String SHRED_SQL = "s.Id as s_id, "
 			+ "s.Description as s_description, s.Owner as s_owner, "
 			+ "s.TimeCreated as s_timeCreated, VideoPath, ShredType, "
 			+ "r.currentRating, r.numberOfRaters";
 
-	public List<Shred> getShredsFromFaneesForShredderWithId(int shredderId) {
+	public List<Shred> getShredsFromFaneesForShredderWithId(int shredderId, int page) {
 		String sql = "SELECT "
 				+ ShredderDAOImpl.SHREDDER_SQL
 				+ ", "
@@ -50,7 +52,8 @@ public class ShredDAOImpl implements ShredDAO {
 				+ GET_FANS + ") "
 				+ "AND s.Owner = sr.id AND sr.id = gs.ShredderId AND "
 				+ "sr.id = es.ShredderId AND ShredType='normal' AND "
-				+ "r.ShredId = s.id ORDER BY s.TimeCreated DESC";
+				+ "r.ShredId = s.id ORDER BY s.TimeCreated DESC LIMIT "
+				+ NO_SHREDS_IN_RESULT_SET + " OFFSET " + page*NO_SHREDS_IN_RESULT_SET;
 		return getShredsFromSQLString(sql, new Object[] { shredderId },
 				new ShredMapper());
 	}
@@ -258,13 +261,15 @@ public class ShredDAOImpl implements ShredDAO {
 				+ " Rating r, Shredder sr, GuitarForShredder gs, "
 				+ " EquiptmentForShredder es WHERE r.ShredId = s.id AND "
 				+ "gs.ShredderId = sr.id AND es.ShredderId = sr.id"
-				+ " ORDER BY CASE WHEN r.currentRating <> 0 "
+				+ " ORDER BY CASE WHEN r.currentRating <> 0 AND r.numberOfRaters <> 0"
 				+ "THEN r.currentRating/r.numberOfRaters ELSE 0 END desc LIMIT ?";
 
 		return getShredsFromSQLString(sql, new Object[] { limit },
 				new ShredMapper());
 	}
 
+	
+	
 	/**
 	 * Gets shred created by shredder that is fanee of shredders that are fanee
 	 * of shredder with id shredderId!
@@ -321,7 +326,7 @@ public class ShredDAOImpl implements ShredDAO {
 				+ " FROM Shred s,"
 				+ " Rating r, Shredder sr, GuitarForShredder gs, "
 				+ " EquiptmentForShredder es WHERE r.ShredId = s.id AND "
-				+ "gs.ShredderId = sr.id AND es.ShredderId = sr.id AND ShredType='normal' ORDER BY s.TimeCreated DESC";
+				+ "gs.ShredderId = sr.id AND es.ShredderId = sr.id AND ShredType='normal' ORDER BY s.TimeCreated DESC LIMIT " + NO_SHREDS_IN_RESULT_SET;
 		return getShredsFromSQLString(sql, new ShredMapper());
 	}
 

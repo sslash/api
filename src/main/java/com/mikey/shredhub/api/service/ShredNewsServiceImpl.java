@@ -91,7 +91,7 @@ public class ShredNewsServiceImpl implements ShredNewsService {
 	}
 
 	private void addNewShredsFromFanees(Shredder shredder,Map<String, List<ShredNewsItem>> shredNews) {
-		List <Shred> shreds = shredDAO.getShredsFromFaneesForShredderWithId(shredder.getId()); 
+		List <Shred> shreds = shredDAO.getShredsFromFaneesForShredderWithId(shredder.getId(), 0); 
 		List <ShredNewsItem> resList = new LinkedList<ShredNewsItem>();
 		for ( int i = 0; i < shreds.size() && i < resultLimit; i++ ) {
 			Shred s = shreds.get(i);

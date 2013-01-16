@@ -9,7 +9,7 @@ import com.mikey.shredhub.api.domain.Tag;
 
 public interface ShredDAO {
 
-	public List<Shred> getShredsFromFaneesForShredderWithId(int shredderId);
+	public List<Shred> getShredsFromFaneesForShredderWithId(int shredderId, int page);
 
 	public List<Tag> getTagsForShredWithId(int id);
 
@@ -41,5 +41,4 @@ public interface ShredDAO {
 	public List<Shred> getAllShreds();
 
 	public void deleteCommentForShred(int index);
-
 }

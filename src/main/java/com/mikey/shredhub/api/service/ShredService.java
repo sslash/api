@@ -11,7 +11,7 @@ import com.mikey.shredhub.api.service.exceptions.IllegalShredArgumentException;
 
 public interface ShredService {
 
-	public List<Shred> getFanShreds(int shredderId);
+	public List<Shred> getFanShreds(int shredderId, int i);
 
 	public List<Tag> getAllTags();
 

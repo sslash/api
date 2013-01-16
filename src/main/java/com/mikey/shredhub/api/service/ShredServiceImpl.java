@@ -39,12 +39,12 @@ public class ShredServiceImpl implements ShredService {
 	@Autowired
 	private BattleDAO battleDAO;
 	
-	private static final int NO_SHREDS_IN_RESULT_SET = 20;
+	
 	private static final int NO_SHREDS_FOR_TOP_SHREDS = 9;
 	
 	@Transactional
-	public List<Shred> getFanShreds(int shredderId) {
-		List <Shred> shreds =  shredDAO.getShredsFromFaneesForShredderWithId(shredderId);
+	public List<Shred> getFanShreds(int shredderId, int page) {
+		List <Shred> shreds =  shredDAO.getShredsFromFaneesForShredderWithId(shredderId, page);
 		return shreds;
 	}
 

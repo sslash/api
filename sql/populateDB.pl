@@ -29,10 +29,11 @@ open (MYFILE, '>>populateDB.sql');
 open (SHREDS, '>>populateShreds.sql');
 open (BATTLES, '>>populateBattles.sql');
 open (FANS, '>>populateFans.sql');
+open(BATTLEREQ, '>>populateBattleRequests.sql');
 open (SHREDDERS, '>>populateShredders.sql');
 
 
-
+# create 1000 shredders
 for (my $i = 0; $i < 1000; $i++) {
     my $rand1 = int(rand(10));
     my $rand2 = int(rand(10));
@@ -80,12 +81,13 @@ my @tagsArr = ("Lick", "Fast", "Technique", "Sweeping", "Tapping", "Cover", "Sol
 "Rock", "Metal", "Pop", "Rap", "Funk", "Acoustic", "Chops", "Jam", "Improvisation");
 
 
-# Create 10000 shreds SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1;
+
 for ( my $i = 0; $i < scalar @tagsArr; $i++ ) {
     my $sql = "INSERT INTO Tag VALUES ( DEFAULT, '$tagsArr[$i]');";
     print MYFILE "$sql\n";
 }
 
+# Create 10000 shreds SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1;
 for (my $i = 0; $i < 10000; $i++) {
 	 my $ran2 = int(rand(41));
      my $tagsRan1 = int(rand(scalar @tagsArr));
@@ -143,7 +145,7 @@ for ( my $i = 0; $i < 10000; $i++) {
         "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1),".
         "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1),".
         "DEFAULT,".
-        "1,".
+        "4,".
         "'accepted',".
         "DEFAULT);\n";
 
@@ -177,6 +179,45 @@ for ( my $i = 0; $i < 1000; $i++) {
             "DEFAULT);\n";
         print FANS $fanSQL;
     }
+}
+
+
+
+# create battle requests!
+my $size = 1000; # size of shredders! Add updated value here!
+for ( my $i = 0; $i < 10000; $i++) {
+    my $ran1 = int(rand($size));
+    my $ran2 = int(rand($size));
+    my $ran3 = int(rand(41));
+    
+    my @imgs = split("\\.", $shr[$ran3]);
+    my $img = @imgs[0] . ".jpg";
+    my $videoThumbnail = $img;
+    
+    my $battleSQL = "INSERT INTO Battle VALUES(".
+    "DEFAULT,".
+    "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1),".
+    "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1),".
+    "DEFAULT,".
+    "4,".
+    "'awaiting',".
+    "DEFAULT);\n";
+    
+    my $shredSQL = "INSERT INTO Shred VALUES (".
+    "DEFAULT,".
+    "'',".
+    "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1),". # this is illegal, but I just need to have a shred owner
+    "DEFAULT,".
+    "'$img',".
+    "'battle',".
+    "'battle_50a508930364e84086ef7b7c_battle2.jpg');\n";
+    
+    my $shredForBattleSQL = "INSERT INTO ShredForBattle VALUES(".
+    "(SELECT currval('Shred_Id_seq')),".
+    "(SELECT currval('Battle_Id_seq')),".
+    "DEFAULT);\n";
+    
+    print BATTLEREQ $battleSQL.$shredSQL.$shredForBattleSQL;
 }
 
 

@@ -27,7 +27,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 	}
 
 	public List<Shred> getRecsBasedOnFansOfShredder(int shredderId) {
-		return shredDAO.getShredsFromFaneesForShredderWithId(shredderId);
+		return shredDAO.getShredsFromFaneesForShredderWithId(shredderId, 0);
 	}
 
 	public List<Shred> getRecsBasedOnShreddersShredderMightKnow(
