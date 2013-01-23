@@ -49,9 +49,7 @@ public class ShredNewsServiceImpl implements ShredNewsService {
 	public Map<String, List<ShredNewsItem>> getLatestShredNewsItems(Shredder shredder,
 			int resultLimit) {
 		this.resultLimit = resultLimit;
-		Map <String, List <ShredNewsItem>> shredNews = new HashMap <String, List <ShredNewsItem>>();
-		//List <ShredNewsItem> shredNews = new ArrayList<ShredNewsItem>();
-		
+		Map <String, List <ShredNewsItem>> shredNews = new HashMap <String, List <ShredNewsItem>>();		
 		this.addNewPotentialFanees(shredder, shredNews);		
 		this.addNewestBattles(shredder, shredNews);
 		this.addNewBattleShreds(shredder, shredNews);

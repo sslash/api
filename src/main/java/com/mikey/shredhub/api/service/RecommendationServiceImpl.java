@@ -23,7 +23,7 @@ public class RecommendationServiceImpl implements RecommendationService {
 	}
 
 	public List<Shred> getRecsBasedOnRatings(int max) {
-		return shredDAO.getShredsOrderedByRating(max);
+		return shredDAO.getShredsOrderedByRating(max, 0);
 	}
 
 	public List<Shred> getRecsBasedOnFansOfShredder(int shredderId) {
@@ -31,8 +31,8 @@ public class RecommendationServiceImpl implements RecommendationService {
 	}
 
 	public List<Shred> getRecsBasedOnShreddersShredderMightKnow(
-			int shredderId) {
-		return shredDAO.getShredsFromShreddersShredderMightKnow(shredderId);
+			int shredderId, int page) {
+		return shredDAO.getShredsFromShreddersShredderMightKnow(shredderId, page);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+
 public class LocalImageFileSaver extends FileSaver {
 	private String imgPathDeploy;
 	private final String imgPath = "/Users/michaekg/michaekg-MyMaster/Shredhub-jsp/src/main/webapp/resources/images/";
@@ -49,6 +50,16 @@ public class LocalImageFileSaver extends FileSaver {
 			System.out.println("Failed to save image: " + e.getMessage() );
 			throw new ImageUploadException("Unable to save image", e);
 		}
+	}
+	
+	@Override
+	protected boolean createAndSaveThumbnail(String filename) {
+		CreateThumbnail thumbnailCreator = new CreateThumbnail();
+		boolean res = thumbnailCreator.createThumbnail(imgPath + filename);
+		if (res)
+			return thumbnailCreator.createThumbnail(imgPathDeploy + filename);
+		else 
+			return false;
 	}
 
 

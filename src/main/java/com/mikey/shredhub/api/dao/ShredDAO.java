@@ -32,9 +32,9 @@ public interface ShredDAO {
 
 	public List<Shred> getShredsForShredderWithId(int id);
 
-	public List<Shred> getShredsOrderedByRating(int max);
+	public List<Shred> getShredsOrderedByRating(int max, int page);
 	
-	public List <Shred> getShredsFromShreddersShredderMightKnow(int shredderId);
+	public List <Shred> getShredsFromShreddersShredderMightKnow(int shredderId, int page);
 	
 	public List<Shred> getShredsWithTagsInTagsList(List <String> tags);
 

@@ -3,6 +3,8 @@ package com.mikey.shredhub.api.dao;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,6 +16,8 @@ import com.mikey.shredhub.api.domain.Shredder;
 @Service
 public class ShredderDAOImpl implements ShredderDAO {
 
+	private static final Logger logger = LoggerFactory.getLogger(ShredderDAOImpl.class);
+	
 	private static final String GET_SHREDDER_ID_BY_NAME = "SELECT id FROM Shredder WHERE Username=?";
 	
 
@@ -159,7 +163,10 @@ public class ShredderDAOImpl implements ShredderDAO {
 		}
 		sql.append(")");
 		
+		// Add not fanee restriction
+		sql.append(" AND sr.id NOT IN ( SELECT faneeId FROM Fan WHERE fanerId = " + shredder.getId() + ")" );
 		
+		logger.debug("getPotentialFaneesForShredder() SQL: " + sql.toString());
 		try {
 			List<Shredder> res = jdbcTemplate.query(sql.toString(), new ShredderMapper());
 			return res;

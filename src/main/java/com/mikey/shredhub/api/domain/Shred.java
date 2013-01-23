@@ -15,6 +15,8 @@ public class Shred implements Serializable {
 	
 	private String videoPath;
 	
+	private String thumbnailpath;
+	
 	private List<Tag> tags;
 	
 	private List <ShredComment> shredComments;
@@ -33,6 +35,15 @@ public class Shred implements Serializable {
 
 	public int getId() {
 		return id;
+	}
+	
+
+	public String getThumbnailpath() {
+		return thumbnailpath;
+	}
+
+	public void setThumbnailpath(String thumbnailpath) {
+		this.thumbnailpath = thumbnailpath;
 	}
 
 	public void setId(int id) {
@@ -99,10 +110,8 @@ public class Shred implements Serializable {
 	public String toString() {
 		return "Shred [id=" + id + ", description=" + description + ", owner="
 				+ owner + ", timeCreated=" + timeCreated + ", videoPath="
-				+ videoPath + ", tags=" + tags + ", shredComments="
-				+ shredComments + ", rating=" + rating.getRating() + ", shredType="
-				+ shredType + "]";
+				+ videoPath + ", thumbnailpath=" + thumbnailpath + ", tags="
+				+ tags + ", shredComments=" + shredComments + ", rating="
+				+ rating + ", shredType=" + shredType + "]";
 	}
-	
-
 }

@@ -29,7 +29,7 @@ public interface ShredService {
 
 	public List <Shred> getAllShreds();
 	
-	public List <Shred> getTopShredsByRating();
+	public List <Shred> getTopShredsByRating(int page);
 
 	public Shred getShredById(String id);
 

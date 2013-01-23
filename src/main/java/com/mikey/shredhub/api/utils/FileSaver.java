@@ -6,9 +6,15 @@ public abstract class FileSaver {
 
 	public boolean saveFile(MultipartFile file, String filename ) throws ImageUploadException {
 		validateFileName(file);		
-		return concreteSaveFile(file, filename);
+		boolean res =  concreteSaveFile(file, filename);
+		
+		if ( res ) {
+			return createAndSaveThumbnail(filename);
+		}else {
+			return false;
+		}
 	}
-	
+	abstract protected boolean createAndSaveThumbnail(String filename);
 	abstract protected void validateFileName(MultipartFile filename) throws ImageUploadException;
 	abstract protected boolean concreteSaveFile(MultipartFile file, String filename );
 }

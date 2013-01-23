@@ -32,7 +32,11 @@ public class ShredderServiceImpl implements ShredderService {
 
 	@Transactional
 	public Shredder loginShredder(String username, String password) {
-		return shredderDAO.getShredderByUsernameAndPassword(username,password);
+		Shredder user = shredderDAO.getShredderByUsernameAndPassword(username,password);
+		if ( user != null ) {
+			user.setFanees(shredderDAO.getFansForShredderWithId(user.getId()));
+		}
+		return user;
 	}
 
 	@Transactional

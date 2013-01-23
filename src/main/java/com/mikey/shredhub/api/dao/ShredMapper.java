@@ -26,6 +26,7 @@ public class ShredMapper implements RowMapper <Shred>{
 		shred.setId(rs.getInt("s_id"));
 		shred.setDescription(rs.getString("s_description"));
 		shred.setTimeCreated(rs.getDate("s_timeCreated"));
+		shred.setThumbnailpath(rs.getString("thumbnailpath"));
 		shred.setVideoPath(rs.getString("VideoPath"));
 		shred.setShredType(rs.getString("ShredType"));
 		// add rating 

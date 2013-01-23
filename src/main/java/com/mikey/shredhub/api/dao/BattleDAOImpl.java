@@ -139,6 +139,11 @@ public class BattleDAOImpl implements BattleDAO {
 		}	
 	}
 	
+	/**
+	 * SQL:
+	 * SELECT s.Id as s_id, s.Description as s_description, s.Owner as s_owner,	s.TimeCreated as s_timeCreated, VideoPath, ShredType, s.thumbnailpath, sr.Id AS sr_id, sr.Username,	sr.BirthDate, sr.Email, sr.Password, sr.Description AS sr_description,	sr.Country, sr.TimeCreated AS sr_timeCreated, sr.ProfileImage, sr.ExperiencePoints, sr.ShredderLevel, sfb.round, sfb.BattleId, sfb.ShredId FROM ShredForBattle sfb, Shred s, Shredder sr WHERE sfb.ShredId = s.id AND s.owner = sr.id AND s.owner != 4078 AND s.owner IN (SELECT f.faneeid FROM Fan f WHERE f.fanerid = 4078)  ORDER BY s.timecreated DESC;
+			
+	 */
 	public List <BattleShredNewsItem> getBattleShredsFromFanees(Shredder shredder){
 		StringBuilder sql = new StringBuilder("SELECT ")
 		.append(ShredDAOImpl.SHRED_SQL).append(", ").append(ShredderDAOImpl.SHREDDER_SQL)
@@ -146,11 +151,11 @@ public class BattleDAOImpl implements BattleDAO {
 		.append("FROM ShredForBattle sfb, Shred s, Shredder sr, Rating r, GuitarForShredder gs, EquiptmentForShredder es")
 		.append(" WHERE sfb.ShredId = s.id AND r.ShredId=s.Id and s.owner = sr.id AND s.owner != ? ")
 		.append("AND sr.id = gs.ShredderId AND sr.id = es.ShredderId AND s.owner IN")
-		.append(" (SELECT f.FaneeId FROM Fan f, Shredder s WHERE f.FanerId = s.id AND f.FanerId = ?)")
+		.append(" (SELECT f.FaneeId FROM Fan f WHERE f.FanerId = ?)")
 		.append(" ORDER BY s.timecreated DESC");
 		
 		return jdbcTemplate.query(sql.toString(), new Object[] {shredder.getId(),shredder.getId()},
-				new BattleShredNewsItemMapper());		
+				new BattleShredNewsItemMapper());
 	}
 	
 	public List<Battle> getNewestBattlesFromFanees(int shredderId) {

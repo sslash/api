@@ -40,7 +40,7 @@ public class ShredServiceImpl implements ShredService {
 	private BattleDAO battleDAO;
 	
 	
-	private static final int NO_SHREDS_FOR_TOP_SHREDS = 9;
+	private static final int NO_SHREDS_FOR_TOP_SHREDS = 20;
 	
 	@Transactional
 	public List<Shred> getFanShreds(int shredderId, int page) {
@@ -61,9 +61,11 @@ public class ShredServiceImpl implements ShredService {
 		}
 		Date now = Utilities.getNow();
 		String fileName = shredder.getId() + file.getOriginalFilename(); 
+		String thumbname = fileName.split("\\.")[0] + ".jpg";
 		String deployPath = servletContext.getRealPath("/") + "resources/images/";
 		new LocalImageFileSaver(deployPath).saveFile(file, fileName);
 		Shred shred = new Shred();
+		shred.setThumbnailpath(thumbname);
 		shred.setDescription(text);		
 		shred.setOwner(shredder);
 		shred.setTimeCreated(now);
@@ -136,8 +138,8 @@ public class ShredServiceImpl implements ShredService {
 		return shredDAO.getAllShreds();
 	}
 
-	public List<Shred> getTopShredsByRating() {
-		return shredDAO.getShredsOrderedByRating(NO_SHREDS_FOR_TOP_SHREDS);
+	public List<Shred> getTopShredsByRating(int page) {
+		return shredDAO.getShredsOrderedByRating(NO_SHREDS_FOR_TOP_SHREDS, page);
 	}
 
 	public Shred getShredById(String id) {

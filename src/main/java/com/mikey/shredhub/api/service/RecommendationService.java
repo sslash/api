@@ -14,5 +14,5 @@ public interface RecommendationService {
 	
 	public List <Shred> getRecsBasedOnFansOfShredder(int shredderId);
 	
-	public List <Shred> getRecsBasedOnShreddersShredderMightKnow(int shredderId);
+	public List <Shred> getRecsBasedOnShreddersShredderMightKnow(int shredderId, int page);
 }
