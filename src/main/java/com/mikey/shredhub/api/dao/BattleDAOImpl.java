@@ -165,7 +165,7 @@ public class BattleDAOImpl implements BattleDAO {
 		.append("OR shredder2 IN ")
 		.append("(SELECT f.FaneeId FROM Fan f, Shredder s WHERE f.FanerId = s.id AND f.FanerId = ?)) ")
 		.append("AND shredder1 != ? AND shredder2 != ? ")
-		.append("ORDER BY TimeCreated DESC");
+		.append("ORDER BY TimeCreated DESC LIMI 20");
 		
 		try {
 			List <Battle> battles = jdbcTemplate.query(sql.toString(), new Object [] {shredderId, shredderId, shredderId, shredderId},

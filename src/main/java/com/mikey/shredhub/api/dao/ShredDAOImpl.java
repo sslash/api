@@ -60,7 +60,7 @@ public class ShredDAOImpl implements ShredDAO {
 
 	public List<Tag> getTagsForShredWithId(int id) {
 		String sql = "SELECT * FROM Tag WHERE ID in (SELECT TagId FROM "
-				+ "TagsForShred WHERE ShredId=?)";
+				+ "TagsForShred WHERE ShredId=?) LIMIT 20";
 		try {
 			return jdbcTemplate
 					.query(sql, new Object[] { id }, new TagMapper());

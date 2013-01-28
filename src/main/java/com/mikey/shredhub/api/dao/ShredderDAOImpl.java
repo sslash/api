@@ -164,7 +164,7 @@ public class ShredderDAOImpl implements ShredderDAO {
 		sql.append(")");
 		
 		// Add not fanee restriction
-		sql.append(" AND sr.id NOT IN ( SELECT faneeId FROM Fan WHERE fanerId = " + shredder.getId() + ")" );
+		sql.append(" AND sr.id NOT IN ( SELECT faneeId FROM Fan WHERE fanerId = " + shredder.getId() + ") LIMIT 20" );
 		
 		logger.debug("getPotentialFaneesForShredder() SQL: " + sql.toString());
 		try {
