@@ -9,7 +9,6 @@ import com.mikey.shredhub.api.domain.newsitem.ShredNewsItem;
 
 public interface ShredNewsService {
 
-	Map<String, List<ShredNewsItem>> getLatestShredNewsItems(Shredder shredder, int resultLimit);
-
+	Map<String, List> getLatestShredNewsItems(Shredder shredder, int resultLimit);
 	
 }

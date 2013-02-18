@@ -17,11 +17,14 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
+
+import com.mikey.shredhub.api.domain.BattleShred;
 import com.mikey.shredhub.api.domain.Shred;
 import com.mikey.shredhub.api.domain.ShredComment;
 import com.mikey.shredhub.api.domain.ShredRating;
 import com.mikey.shredhub.api.domain.Shredder;
 import com.mikey.shredhub.api.domain.Tag;
+import com.mikey.shredhub.api.domain.newsitem.BattleShredNewsItem;
 
 @Service
 public class ShredDAOImpl implements ShredDAO {
@@ -29,7 +32,7 @@ public class ShredDAOImpl implements ShredDAO {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	private static final String GET_FANS = "SELECT faneeid FROM Fan WHERE FanerId=?";
+	private static final String FANEES_SQL = "SELECT faneeid FROM Fan WHERE FanerId=?";
 
 	private static final String GET_ALL_TAGS = "SELECT * FROM Tag";
 
@@ -42,20 +45,28 @@ public class ShredDAOImpl implements ShredDAO {
 			+ "s.TimeCreated as s_timeCreated, VideoPath, ShredType, s.thumbnailpath, "
 			+ "r.currentRating, r.numberOfRaters";
 
-	public List<Shred> getShredsFromFaneesForShredderWithId(int shredderId, int page) {
-		String sql = "SELECT "
-				+ ShredderDAOImpl.SHREDDER_SQL
-				+ ", "
-				+ SHRED_SQL
-				+ " FROM Shred s, Rating r, Shredder sr, GuitarForShredder gs, "
-				+ " EquiptmentForShredder es " + "WHERE s.Owner IN ("
-				+ GET_FANS + ") "
-				+ "AND s.Owner = sr.id AND sr.id = gs.ShredderId AND "
-				+ "sr.id = es.ShredderId AND ShredType='normal' AND "
-				+ "r.ShredId = s.id ORDER BY s.TimeCreated DESC LIMIT "
-				+ NO_SHREDS_IN_RESULT_SET + " OFFSET " + page*NO_SHREDS_IN_RESULT_SET;
-		return getShredsFromSQLString(sql, new Object[] { shredderId },
-				new ShredMapper());
+	public List<Shred> getShredsFromFaneesForShredderWithId(int shredderId, int page) {		
+		StringBuilder sql = new StringBuilder("SELECT ")
+		.append("sr.username as sr_u, sr.id as sr_id, s.ThumbnailPath as s_tp, ")
+		.append("s.id as s_id, s.description as s_desc ")
+		.append("FROM Shred s, Shredder sr ")
+		.append("WHERE s.Owner IN (" + FANEES_SQL + ") AND s.Owner = sr.id AND ShredType ='normal' ")
+		.append("ORDER BY s.TimeCreated DESC LIMIT ")
+		.append(NO_SHREDS_IN_RESULT_SET + " OFFSET " + page*NO_SHREDS_IN_RESULT_SET);
+		
+		return jdbcTemplate.query(sql.toString(), new Object[] { shredderId },
+				new RowMapper<Shred>() {
+			public Shred mapRow(ResultSet rs, int rowNum ) throws SQLException {
+				Shred s = new Shred();
+				s.setId(rs.getInt("s_id"));
+				s.setThumbnailpath(rs.getString("s_tp"));
+				s.setDescription(rs.getString("s_desc"));
+				Shredder sh = new Shredder(rs.getInt("sr_id"));
+				sh.setUsername(rs.getString("sr_u"));
+				s.setOwner(sh);
+				return s;				
+			}					
+		});
 	}
 
 	public List<Tag> getTagsForShredWithId(int id) {

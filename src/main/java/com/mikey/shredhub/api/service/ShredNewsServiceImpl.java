@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,8 @@ import com.mikey.shredhub.api.domain.newsitem.ShredNewsItem;
 
 @Service
 public class ShredNewsServiceImpl implements ShredNewsService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ShredNewsServiceImpl.class);
 
 	@Autowired
 	private ShredderDAO shredderDAO;
@@ -44,20 +48,27 @@ public class ShredNewsServiceImpl implements ShredNewsService {
 	
 	public static final String POT_FANEES = "POTENTIAL_FANEES";
 	
-	
-	
-	public Map<String, List<ShredNewsItem>> getLatestShredNewsItems(Shredder shredder,
+	public Map<String, List/*<ShredNewsItem>*/> getLatestShredNewsItems(Shredder shredder,
 			int resultLimit) {
 		this.resultLimit = resultLimit;
-		Map <String, List <ShredNewsItem>> shredNews = new HashMap <String, List <ShredNewsItem>>();		
-		this.addNewPotentialFanees(shredder, shredNews);		
+		Map <String, List /*<ShredNewsItem>*/> shredNews = new HashMap <String, List /*<ShredNewsItem>*/>();	
+		long t1 = System.currentTimeMillis();
+		
+		this.addNewPotentialFanees(shredder, shredNews);
+		logger.info("add pot fanees: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		t1 = System.currentTimeMillis();
 		this.addNewestBattles(shredder, shredNews);
+		logger.info("newest battles: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		t1 = System.currentTimeMillis();
 		this.addNewBattleShreds(shredder, shredNews);
+		logger.info("battle shreds: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		t1 = System.currentTimeMillis();
 		this.addNewShredsFromFanees(shredder, shredNews);	
+		logger.info("shreds from fanees: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
 		return shredNews;
 	}
 
-	private void addNewPotentialFanees(Shredder shredder,Map<String, List<ShredNewsItem>> shredNews) {
+	private void addNewPotentialFanees(Shredder shredder,Map<String, List/*<ShredNewsItem>*/> shredNews) {
 		List <Shredder> shredders = shredderDAO.getPotentialFaneesForShredder(shredder);
 		List <ShredNewsItem> resList = new LinkedList<ShredNewsItem>();
 		for ( int i = 0; i < shredders.size() && i < resultLimit; i++ ) {
@@ -67,28 +78,15 @@ public class ShredNewsServiceImpl implements ShredNewsService {
 		shredNews.put(POT_FANEES, resList);
 	}
 
-	private void addNewestBattles(Shredder shredder,Map<String, List<ShredNewsItem>> shredNews) {
-		List <Battle> battles = battleDAO.getNewestBattlesFromFanees(shredder.getId()); 
-		List <ShredNewsItem> resList = new LinkedList<ShredNewsItem>();
-		for ( int i = 0; i < battles.size() && i < resultLimit; i++ ) {
-			Battle b = battles.get(i);			
-			resList.add(new NewBattleCreatedNewsItem(b));
-		}
-		shredNews.put(NEWEST_BATTLES, resList);
-		
+	private void addNewestBattles(Shredder shredder,Map<String, List/*<ShredNewsItem>*/> shredNews) {
+		shredNews.put(NEWEST_BATTLES, battleDAO.getNewestBattlesFromFanees(shredder.getId()));		
 	}
 
-	private void addNewBattleShreds(Shredder shredder,Map<String, List<ShredNewsItem>> shredNews) {
-		List<BattleShredNewsItem> battleShreds = battleDAO.getBattleShredsFromFanees(shredder); 
-		List <ShredNewsItem> resList = new LinkedList<ShredNewsItem>();
-		for ( int i = 0; i < battleShreds.size() && i < resultLimit; i++ ) {
-			BattleShredNewsItem b = battleShreds.get(i);
-			resList.add(b);
-		}
-		shredNews.put(BATTLE_SHREDS, resList);
+	private void addNewBattleShreds(Shredder shredder,Map<String, List/*<ShredNewsItem>*/> shredNews) {
+		shredNews.put(BATTLE_SHREDS, battleDAO.getBattleShredsFromFanees(shredder));
 	}
 
-	private void addNewShredsFromFanees(Shredder shredder,Map<String, List<ShredNewsItem>> shredNews) {
+	private void addNewShredsFromFanees(Shredder shredder,Map<String, List/*<ShredNewsItem>*/> shredNews) {
 		List <Shred> shreds = shredDAO.getShredsFromFaneesForShredderWithId(shredder.getId(), 0); 
 		List <ShredNewsItem> resList = new LinkedList<ShredNewsItem>();
 		for ( int i = 0; i < shreds.size() && i < resultLimit; i++ ) {
