@@ -86,9 +86,10 @@ public class ShredderDAOImpl implements ShredderDAO {
 	}
 
 	// This one and the one below is totally equal. Could do something with that..
-	public List<Shredder> getAllShredders() {
+	public List<Shredder> getAllShredders(int page) {
 		String sql = "SELECT " + SHREDDER_SQL + " FROM Shredder sr, GuitarForShredder " +
-		"gs, EquiptmentForShredder es WHERE sr.id = gs.ShredderId and sr.id = es.ShredderId";
+		"gs, EquiptmentForShredder es WHERE sr.id = gs.ShredderId and sr.id = es.ShredderId "
+				+ " ORDER BY timeCreated DESC LIMIT 20 OFFSET " + page*20;
 		
 		try {
 			return jdbcTemplate.query(sql, new ShredderMapper());

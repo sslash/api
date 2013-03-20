@@ -4,6 +4,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.mikey.shredhub.api.domain.Shredder;
+import com.mikey.shredhub.api.service.exceptions.IllegalShredderArgumentException;
 import com.mikey.shredhub.api.utils.ImageUploadException;
 
 public interface ShredderService {
@@ -12,11 +13,11 @@ public interface ShredderService {
 
 	public Shredder loginShredder(String username, String password);
 
-	public List<Shredder> getAllShredders();
+	public List<Shredder> getAllShredders(int page);
 
 	public List<Shredder> getFansForShredderWithId(int id);
 
-	public void createFanRelation(int id, int id2);
+	public List<Shredder> createFaneeRelation(int id, int id2, List <Shredder> fanersFanees) throws IllegalShredderArgumentException;
 
 	public Shredder getShredderWithId(int id);
 

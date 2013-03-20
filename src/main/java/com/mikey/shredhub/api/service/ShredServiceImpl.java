@@ -96,6 +96,10 @@ public class ShredServiceImpl implements ShredService {
 		if ( shred == null ) {
 			throw new IllegalShredArgumentException("Shred with id: " + shredId + " does not exist");
 		}
+		
+		if ( newRate < 0 || newRate > 10 ) {
+			throw new IllegalShredArgumentException("Illegal rate value!");
+		}
 		ShredRating currentRating = shred.getRating();
 		
 		// Here I could use the domain model pattern so that the

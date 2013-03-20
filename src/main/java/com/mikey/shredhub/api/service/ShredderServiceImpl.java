@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mikey.shredhub.api.dao.ShredDAO;
 import com.mikey.shredhub.api.dao.ShredderDAO;
 import com.mikey.shredhub.api.domain.Shredder;
+import com.mikey.shredhub.api.service.exceptions.IllegalShredderArgumentException;
 import com.mikey.shredhub.api.utils.ImageUploadException;
 import com.mikey.shredhub.api.utils.LocalImageFileSaver;
 
@@ -40,8 +41,8 @@ public class ShredderServiceImpl implements ShredderService {
 	}
 
 	@Transactional
-	public List<Shredder> getAllShredders() {
-		return shredderDAO.getAllShredders();
+	public List<Shredder> getAllShredders(int page) {
+		return shredderDAO.getAllShredders(page);
 	}
 
 	@Transactional
@@ -50,8 +51,21 @@ public class ShredderServiceImpl implements ShredderService {
 	}
 
 	@Transactional(readOnly = false)
-	public void createFanRelation(int faner, int fanee) {
-		shredderDAO.createFanRelation(faner, fanee);		
+	public List<Shredder> createFaneeRelation(int faner, int fanee, List<Shredder>fanersFanees) throws IllegalShredderArgumentException {
+		Shredder shredderFan = shredderDAO.getShredderById(faner);
+		if ( shredderFan == null ) 
+			throw new IllegalShredderArgumentException("The faner must exist!");
+	
+		Shredder shredderFanee = shredderDAO.getShredderById(fanee);
+		if ( shredderFanee == null ) 
+			throw new IllegalShredderArgumentException("The fanee must exist!");
+		
+		if ( fanersFanees.contains(shredderFanee))
+			throw new IllegalShredderArgumentException("Faner is already a fan of fanee!");
+		
+		shredderDAO.createFanRelation(faner, fanee);
+		fanersFanees.add(shredderFanee);
+		return fanersFanees;
 	}
 
 	@Transactional

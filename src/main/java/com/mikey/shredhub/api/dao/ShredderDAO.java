@@ -13,7 +13,7 @@ public interface ShredderDAO {
 	public Shredder getShredderByUsernameAndPassword(String username,
 			String password);
 
-	public List<Shredder> getAllShredders();
+	public List<Shredder> getAllShredders(int page);
 
 	public List<Shredder> getFansForShredderWithId(int id);
 
