@@ -63,7 +63,8 @@ public class ShredServiceImpl implements ShredService {
 		String fileName = shredder.getId() + file.getOriginalFilename(); 
 		String thumbname = fileName.split("\\.")[0] + ".jpg";
 		String deployPath = servletContext.getRealPath("/") + "resources/images/";
-		new LocalImageFileSaver(deployPath).saveFile(file, fileName);
+		// No need to save file when testing!
+		//new LocalImageFileSaver(deployPath).saveFile(file, fileName);
 		Shred shred = new Shred();
 		shred.setThumbnailpath(thumbname);
 		shred.setDescription(text);		
