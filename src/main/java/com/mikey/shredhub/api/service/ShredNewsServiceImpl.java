@@ -52,19 +52,19 @@ public class ShredNewsServiceImpl implements ShredNewsService {
 			int resultLimit) {
 		this.resultLimit = resultLimit;
 		Map <String, List /*<ShredNewsItem>*/> shredNews = new HashMap <String, List /*<ShredNewsItem>*/>();	
-		long t1 = System.currentTimeMillis();
+		//long t1 = System.currentTimeMillis();
 		
 		this.addNewPotentialFanees(shredder, shredNews);
-		logger.info("add pot fanees: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
-		t1 = System.currentTimeMillis();
+		//logger.info("add pot fanees: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		//t1 = System.currentTimeMillis();
 		this.addNewestBattles(shredder, shredNews);
-		logger.info("newest battles: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
-		t1 = System.currentTimeMillis();
+		//logger.info("newest battles: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		//t1 = System.currentTimeMillis();
 		this.addNewBattleShreds(shredder, shredNews);
-		logger.info("battle shreds: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
-		t1 = System.currentTimeMillis();
+		//logger.info("battle shreds: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		//t1 = System.currentTimeMillis();
 		this.addNewShredsFromFanees(shredder, shredNews);	
-		logger.info("shreds from fanees: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
+		//logger.info("shreds from fanees: Time: " + (System.currentTimeMillis() - t1) + (System.currentTimeMillis() - t1)/1000);
 		return shredNews;
 	}
 
