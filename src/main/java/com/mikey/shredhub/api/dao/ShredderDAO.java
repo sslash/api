@@ -24,4 +24,6 @@ public interface ShredderDAO {
 	public void persistShredder(Shredder shredder);
 	
 	public List<Shredder> getPotentialFaneesForShredder(Shredder shredder);
+
+	public boolean addDiggForGuitar(String id, String gIndex);
 }

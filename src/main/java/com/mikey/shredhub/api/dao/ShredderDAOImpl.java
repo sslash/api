@@ -10,7 +10,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.mikey.shredhub.api.domain.Shred;
+import com.mikey.shredhub.api.domain.GuitarForShredder;
 import com.mikey.shredhub.api.domain.Shredder;
 
 @Service
@@ -24,7 +24,8 @@ public class ShredderDAOImpl implements ShredderDAO {
 	public static final String SHREDDER_SQL = "sr.Id AS sr_id, sr.Username, " +
 			"sr.BirthDate, sr.Email, sr.Password, sr.Description AS sr_description, " +
 			"sr.Country, sr.TimeCreated AS sr_timeCreated, sr.ProfileImage, " +
-			"sr.ExperiencePoints, sr.ShredderLevel, gs.guitar, es.equiptment";
+			"sr.ExperiencePoints, sr.ShredderLevel, gs.guitar AS guitarName, " +
+			"gs.ImgPath AS guitarImgPath, gs.Digs as guitarDigs, es.equiptment";
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
@@ -50,10 +51,10 @@ public class ShredderDAOImpl implements ShredderDAO {
 	}
 
 
-	private void insertGuitarsForShredder(int id, List <String> guitars) {
-		for ( String g : guitars) {
+	private void insertGuitarsForShredder(int id, List<GuitarForShredder> list) {
+		for ( GuitarForShredder g : list) {
 			jdbcTemplate.update("INSERT INTO GuitarForShredder VALUES(?,?)",
-					g, id);
+					g.getName(), id);
 		}
 	}
 
@@ -74,10 +75,11 @@ public class ShredderDAOImpl implements ShredderDAO {
 		"gs, EquiptmentForShredder es WHERE sr.id = gs.ShredderId and sr.id = es.ShredderId AND Username=?";
 		
 		try {
-			Shredder sh = jdbcTemplate.queryForObject(sql, new Object [] {username}, new ShredderMapper());
-			if ( !password.equals(sh.getPassword()))
+			List<Shredder> res = jdbcTemplate.query(sql, new Object [] {username}, new ShredderMapper());
+			Shredder toRet = res.get(0);
+			if ( !password.equals(toRet.getPassword()))
 				return null;
-			return sh;
+			return toRet;
 		} catch (DataAccessException e) {
 			System.err.println("failed to get user: " + e.getMessage() + " " + e.getLocalizedMessage());
 			return null;
@@ -117,12 +119,13 @@ public class ShredderDAOImpl implements ShredderDAO {
 	}
 
 	public Shredder getShredderById(int id) {
+		System.out.println("get shredder by id: " + id);
 		try {
 			String sql = "SELECT "+SHREDDER_SQL+" FROM Shredder sr, GuitarForShredder " +
 					"gs, EquiptmentForShredder es WHERE sr.id = gs.ShredderId " +
 					"and sr.id = es.ShredderId AND sr.Id=?";
-			Shredder sh = jdbcTemplate.queryForObject(sql, new Object [] {id}, new ShredderMapper());
-			
+			List<Shredder> shredderList = jdbcTemplate.query(sql, new Object [] {id}, new ShredderMapper());
+			Shredder sh = shredderList.get(0);
 			// Simple solution to get fanees. Could have done it in one sql as well
 			sh.setFanees(this.getFansForShredderWithId(id));
 			return sh;
@@ -154,8 +157,8 @@ public class ShredderDAOImpl implements ShredderDAO {
 				.append(shredder.getCountry()).append("%' ");
 		
 		// Add guitars
-		for ( String g : shredder.getGuitars() ) {
-			sql.append("OR gs.guitar like '").append(g).append("' ");
+		for ( GuitarForShredder g : shredder.getGuitars() ) {
+			sql.append("OR gs.guitar like '").append(g.getName()).append("' ");
 		}
 		
 		// Add equiptment
@@ -173,6 +176,19 @@ public class ShredderDAOImpl implements ShredderDAO {
 			return res;
 		} catch (DataAccessException e) {
 			return new ArrayList<Shredder>();
+		}
+	}
+
+
+
+	public boolean addDiggForGuitar(String id, String guitarName) {
+		int shredderId = Integer.parseInt(id);
+		String SQL = "UPDATE GuitarForShredder SET Digs = Digs+? WHERE ShredderId=? AND Guitar=?";
+		try{
+			jdbcTemplate.update(SQL, 1, shredderId, guitarName);
+			return true;
+		}catch(DataAccessException e) {
+			return false;
 		}
 	}
 

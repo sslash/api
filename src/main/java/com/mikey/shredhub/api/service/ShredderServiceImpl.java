@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.mikey.shredhub.api.dao.ShredDAO;
 import com.mikey.shredhub.api.dao.ShredderDAO;
 import com.mikey.shredhub.api.domain.Shredder;
+import com.mikey.shredhub.api.domain.UpdateShredderLevel;
 import com.mikey.shredhub.api.service.exceptions.IllegalShredderArgumentException;
 import com.mikey.shredhub.api.utils.ImageUploadException;
 import com.mikey.shredhub.api.utils.LocalImageFileSaver;
@@ -95,5 +96,23 @@ public class ShredderServiceImpl implements ShredderService {
 		shredder.setProfileImagePath(imgName);
 		shredderDAO.addShredder(shredder);
 		
+	}
+
+	@Transactional(readOnly=false)
+	public boolean addDiggForGuitar(Shredder user, String id, String gIndex) {
+		if ( !(user.getId() + "").equals(id) ){
+			
+			boolean sqlRes = shredderDAO.addDiggForGuitar(id, gIndex);
+			if ( sqlRes ) {
+				Shredder shredder = shredderDAO.getShredderById(Integer.parseInt(id));
+			
+				// 	Update shredder level
+				UpdateShredderLevel usl = new UpdateShredderLevel(shredder, 1 );
+				boolean res = usl.advanceXp();			
+				shredderDAO.persistShredder( shredder);
+				return true;
+			}
+		}
+		return false;
 	}
 }

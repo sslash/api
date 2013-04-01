@@ -31,7 +31,7 @@ public class Shredder implements Serializable{
           
      private String country;
      
-     private List <String> guitars;
+     private List <GuitarForShredder> guitars;
      
      private List <String> equiptment; 
           
@@ -73,7 +73,8 @@ public class Shredder implements Serializable{
 
 
 	public Shredder() {
-		
+		equiptment = new ArrayList<String>();
+		guitars = new ArrayList<GuitarForShredder>();
 	}
 
 	public String getDescription() {
@@ -145,11 +146,11 @@ public class Shredder implements Serializable{
 		return id;
 	}
 
-	public List<String> getGuitars() {
+	public List<GuitarForShredder> getGuitars() {
 		return guitars;
 	}
 
-	public void setGuitars(List<String> guitars) {
+	public void setGuitars(List<GuitarForShredder> guitars) {
 		this.guitars = guitars;
 	}
 
@@ -161,9 +162,9 @@ public class Shredder implements Serializable{
 		this.equiptment = equiptment;
 	}
 	
-	public void addGuitar(String guitar) {
+	public void addGuitar(GuitarForShredder guitar) {
 		if (guitars == null){
-			guitars = new ArrayList<String>();
+			guitars = new ArrayList<GuitarForShredder>();
 		}
 		
 		guitars.add(guitar);

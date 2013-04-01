@@ -24,13 +24,14 @@ my @img =("EddieVanHalen.jpg", "RobertoDeMicheli.jpg", "michael.jpg",
 
 my $date = strftime "%Y-%m-%d %H:%M:%S", localtime;
 
-open (MYFILE, '>>populateDB.sql');
-open (STUFF, '>>populateStuff.sql')
-open (SHREDS, '>>populateShreds.sql');
-open (BATTLES, '>>populateBattles.sql');
-open (FANS, '>>populateFans.sql');
-open(BATTLEREQ, '>>populateBattleRequests.sql');
-open (SHREDDERS, '>>populateShredders.sql');
+#open (MYFILE, '>>populateDB.sql');
+#open (STUFF, '>>populateStuff.sql')
+#open (SHREDS, '>>populateShreds.sql');
+#open (BATTLES, '>>populateBattles.sql');
+#open (FANS, '>>populateFans.sql');
+#open(BATTLEREQ, '>>populateBattleRequests.sql');
+#open (SHREDDERS, '>>populateShredders.sql');
+open (USERROLE, '>>populateRoles.sql');
 
 
 # create 1000 shredders
@@ -58,9 +59,12 @@ for (my $i = 0; $i < 1000; $i++) {
     
     my $guitar = "INSERT INTO GuitarForShredder VALUES ('$randg', $shredder);\n";
     my $equiptment = "INSERT INTO EquiptmentForShredder VALUES ('$rande', $shredder);\n";
+    my $roleSQL = "INSERT INTO UserRole VALUES (DEFAULT, $shredder);\n";
     
-    print MYFILE "$SQL$guitar$equiptment";
+    #print MYFILE "$SQL$guitar$equiptment";
+    print USERROLE "$roleSQL";
 }
+
 
 
 
@@ -132,7 +136,7 @@ for (my $i = 0; $i < 50000; $i++) {
 
     my $rating = "INSERT INTO Rating VALUES (".
         "(SELECT currval('Shred_Id_seq')), $ranrate2, $ranrate);\n";
-    print MYFILE $sql.$tagsSQL.$tagsSQL2.$commentSQL.$comment2SQL.$rating;
+    #print MYFILE $sql.$tagsSQL.$tagsSQL2.$commentSQL.$comment2SQL.$rating;
 }
 
 # create battles
@@ -170,7 +174,7 @@ for ( my $i = 0; $i < 10000; $i++) {
         "(SELECT currval('Battle_Id_seq')),".
         "DEFAULT);\n";
 
-    print MYFILE $battleSQL.$shredSQL.$shredForBattleSQL;
+    #print MYFILE $battleSQL.$shredSQL.$shredForBattleSQL;
 }
 
 
@@ -183,8 +187,8 @@ for ( my $i = 0; $i < 1000; $i++) {
         my $fanSQL = "INSERT INTO Fan VALUES(".
             "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1), ".
             "(SELECT Id FROM Shredder ORDER BY RANDOM() LIMIT 1), ".
-            "DEFAULT);\n";
-        print MYFILE $fanSQL;
+              "DEFAULT);\n";
+        #print MYFILE $fanSQL;
     }
 }
 
@@ -225,7 +229,7 @@ for ( my $i = 0; $i < 1000; $i++) {
     "(SELECT currval('Battle_Id_seq')),".
     "DEFAULT);\n";
     
-    print MYFILE $battleSQL.$shredSQL.$shredForBattleSQL;
+    # print MYFILE $battleSQL.$shredSQL.$shredForBattleSQL;
 }
 
 

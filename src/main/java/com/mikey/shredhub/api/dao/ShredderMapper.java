@@ -7,15 +7,24 @@ import java.util.List;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import com.mikey.shredhub.api.domain.GuitarForShredder;
 import com.mikey.shredhub.api.domain.Shredder;
 import com.mikey.shredhub.api.domain.ShredderLevel;
 
 public class ShredderMapper implements RowMapper <Shredder>{
 	
+	private Shredder shredder;
 	
+	public ShredderMapper(Shredder shredder) {
+		this.shredder = shredder;
+	}
+	
+	public ShredderMapper() {
+		this.shredder = new Shredder();
+	}
 
 	public Shredder mapRow(ResultSet rs, int rowNum) throws SQLException {
-		Shredder shredder = new Shredder();
+		//Shredder shredder = new Shredder();
 		shredder.setId(rs.getInt("sr_id"));
 		shredder.setUsername(rs.getString("username"));
 		shredder.setPassword(rs.getString("password"));
@@ -28,9 +37,13 @@ public class ShredderMapper implements RowMapper <Shredder>{
 		shredder.setTimeCreated(rs.getDate("sr_timeCreated"));
 		
 		try {
-			shredder.addGuitar(rs.getString("guitar"));
-			shredder.addEquiptment(rs.getString("equiptment"));	
-			
+			GuitarForShredder guitar = new GuitarForShredder();
+			guitar.setImgPath(rs.getString("guitarImgPath"));
+			guitar.setDiggs(rs.getInt("guitarDigs"));
+			guitar.setName(rs.getString("guitarName"));
+			shredder.addGuitar(guitar);
+			if ( !shredder.getEquiptment().contains(rs.getString("equiptment")))
+				shredder.addEquiptment(rs.getString("equiptment"));				
 		}catch(Exception e) {
 			System.out.println("Error in shredder mapper: " + e.getMessage());
 		}

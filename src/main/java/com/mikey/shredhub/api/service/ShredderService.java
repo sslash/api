@@ -22,4 +22,6 @@ public interface ShredderService {
 	public Shredder getShredderWithId(int id);
 
 	public boolean getIfShredder1IsFanOfShredder2(int id, int id2);
+
+	public boolean addDiggForGuitar(Shredder shredder, String id, String gIndex);
 }
