@@ -8,6 +8,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -39,6 +41,7 @@ public class ShredDAOImpl implements ShredDAO {
 	private static final String GET_TAG_WITH_LABEL = "SELECT * FROM Tag WHERE Label=?";
 	
 	private static final int NO_SHREDS_IN_RESULT_SET = 20;
+	private static final Logger logger = LoggerFactory.getLogger(ShredDAOImpl.class);
 
 	public static final String SHRED_SQL = "s.Id as s_id, "
 			+ "s.Description as s_description, s.Owner as s_owner, "
@@ -54,7 +57,10 @@ public class ShredDAOImpl implements ShredDAO {
 		.append("ORDER BY s.TimeCreated DESC LIMIT ")
 		.append(NO_SHREDS_IN_RESULT_SET + " OFFSET " + page*NO_SHREDS_IN_RESULT_SET);
 		
-		return jdbcTemplate.query(sql.toString(), new Object[] { shredderId },
+		
+		
+		long t1 = System.currentTimeMillis();
+		List<Shred> res =  jdbcTemplate.query(sql.toString(), new Object[] { shredderId },
 				new RowMapper<Shred>() {
 			public Shred mapRow(ResultSet rs, int rowNum ) throws SQLException {
 				Shred s = new Shred();
@@ -67,6 +73,14 @@ public class ShredDAOImpl implements ShredDAO {
 				return s;				
 			}					
 		});
+				
+				
+		System.out.println("shreds from fanees: " + (System.currentTimeMillis() - t1));
+		logger.info("shreds from fanees: " + (System.currentTimeMillis() - t1));
+		
+		return res;
+		
+		
 	}
 
 	public List<Tag> getTagsForShredWithId(int id) {
@@ -130,6 +144,8 @@ public class ShredDAOImpl implements ShredDAO {
 	public int persistShred(final Shred shred) {
 
 		// Persist shred
+		long t1 = System.currentTimeMillis();		
+		
 		final String sql = "INSERT INTO Shred VALUES (DEFAULT,?,?,?,?,?,?)";
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbcTemplate.update(new PreparedStatementCreator() {
@@ -161,6 +177,10 @@ public class ShredDAOImpl implements ShredDAO {
 		// insert rating for this shred
 		jdbcTemplate.update("INSERT INTO Rating VALUES(?, DEFAULT, DEFAULT)",
 				shred.getId());
+
+		System.out.println("Persist shred: " + (System.currentTimeMillis() - t1));
+		logger.info("Persist shred: " + (System.currentTimeMillis() - t1));
+		
 		return shred.getId();
 	}
 
@@ -192,10 +212,15 @@ public class ShredDAOImpl implements ShredDAO {
 	}
 
 	public void persistRate(int shredId, ShredRating currentRating) {
+
+		long t1 = System.currentTimeMillis();
+		
 		jdbcTemplate
 				.update("UPDATE Rating SET currentRating=?, numberOfRaters=? WHERE ShredId = ?",
 						currentRating.getCurrentRating(),
 						currentRating.getNumberOfRaters(), shredId);
+		System.out.println("Update rating: " + (System.currentTimeMillis() - t1));
+		logger.info("Update rating: " + (System.currentTimeMillis() - t1));
 	}
 
 	private List<Shred> getShredsFromSQLString(String sql, ShredMapper mapper) {
@@ -278,8 +303,13 @@ public class ShredDAOImpl implements ShredDAO {
 				+ " ORDER BY CASE WHEN r.currentRating <> 0 AND r.numberOfRaters <> 0"
 				+ "THEN r.currentRating/r.numberOfRaters ELSE 0 END desc LIMIT ? OFFSET " + page*limit;
 
-		return getShredsFromSQLString(sql, new Object[] { limit },
+		long t1 = System.currentTimeMillis();
+		List<Shred> res =  getShredsFromSQLString(sql, new Object[] { limit },
 				new ShredMapper());
+		System.out.println("rating: " + (System.currentTimeMillis() - t1));
+		logger.info("rating: " + (System.currentTimeMillis() - t1));
+		
+		return res;
 	}
 
 	
@@ -309,8 +339,14 @@ public class ShredDAOImpl implements ShredDAO {
 				+ " EquiptmentForShredder es  WHERE r.ShredId = s.id AND "
 				+ "gs.ShredderId = sr.id AND es.ShredderId = sr.id AND s.Owner IN ("
 				+ shreddersMightKnow + ") LIMIT " + NO_SHREDS_IN_RESULT_SET + " OFFSET " + page*21; // Simply because it fits the view. Should be a parameter though..
-		return getShredsFromSQLString(sql, new Object[] { shredderId,
+		
+		long t1 = System.currentTimeMillis();
+		List<Shred> res =  getShredsFromSQLString(sql, new Object[] { shredderId,
 				shredderId }, new ShredMapper());
+		System.out.println("Shreds shredder might know: " + (System.currentTimeMillis() - t1));
+		logger.info("Shreds shredder might know: " + (System.currentTimeMillis() - t1));
+		return res;
+		
 	}
 	
 	
@@ -336,8 +372,14 @@ public class ShredDAOImpl implements ShredDAO {
 				+ "gs.ShredderId = sr.id AND es.ShredderId = sr.id AND s.Id IN ("
 				+ shredId.toString() + ") AND s.Owner = sr.id LIMIT " + NO_SHREDS_IN_RESULT_SET;
 
-		return getShredsFromSQLString(selectShreds,
+		
+		long t1 = System.currentTimeMillis();
+		List<Shred> res =  getShredsFromSQLString(selectShreds,
 				new Object[] { tags.size() }, new ShredMapper());
+		System.out.println("Shreds by tags: " + (System.currentTimeMillis() - t1));
+		logger.info("Shreds by tags: " + (System.currentTimeMillis() - t1));
+		return res;
+		
 	}
 
 	public List<Shred> getAllShreds() {
@@ -354,8 +396,13 @@ public class ShredDAOImpl implements ShredDAO {
 	}
 
 	public void deleteCommentForShred(int commentId) {
+		
+		long t1 = System.currentTimeMillis();
 		String SQL = "DELETE FROM CommentForShred WHERE Id = " + commentId;
-		jdbcTemplate.execute(SQL);		
+		jdbcTemplate.execute(SQL);
+		System.out.println("Delete comment: " + (System.currentTimeMillis() - t1));
+		logger.info("Delete comment: " + (System.currentTimeMillis() - t1));
+		
 	}	
 	
 }
